@@ -348,6 +348,106 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
   return nil;
 }
 
+#pragma mark - WKUIDelegate
+
+- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)())completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler();
+    }]];
+    
+    UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ( viewController.presentedViewController && !viewController.presentedViewController.isBeingDismissed ) {
+        viewController = viewController.presentedViewController;
+    }
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint 
+    constraintWithItem:alert.view 
+    attribute:NSLayoutAttributeHeight 
+    relatedBy:NSLayoutRelationLessThanOrEqual 
+    toItem:nil 
+    attribute:NSLayoutAttributeNotAnAttribute 
+    multiplier:1 
+    constant:viewController.view.frame.size.height*2.0f];
+
+    [alert.view addConstraint:constraint];
+    [viewController presentViewController:alert animated:YES completion:^{}];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptConfirmPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(BOOL result))completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:message
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(NO);
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        completionHandler(YES);
+    }]];
+    
+    UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ( viewController.presentedViewController && !viewController.presentedViewController.isBeingDismissed ) {
+        viewController = viewController.presentedViewController;
+    }
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint 
+    constraintWithItem:alert.view 
+    attribute:NSLayoutAttributeHeight 
+    relatedBy:NSLayoutRelationLessThanOrEqual 
+    toItem:nil 
+    attribute:NSLayoutAttributeNotAnAttribute 
+    multiplier:1 
+    constant:viewController.view.frame.size.height*2.0f];
+
+    [alert.view addConstraint:constraint];
+    [viewController presentViewController:alert animated:YES completion:^{}];
+}
+
+- (void)webView:(WKWebView *)webView runJavaScriptTextInputPanelWithPrompt:(NSString *)prompt defaultText:(NSString *)defaultText initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSString *result))completionHandler
+{
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil
+                                                                   message:prompt
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+        textField.placeholder = prompt;
+        textField.secureTextEntry = NO;
+        textField.text = defaultText;
+    }];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"Cancel", nil) style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+        completionHandler(nil);
+    }]];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil) style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+        completionHandler([alert.textFields.firstObject text]);
+    }]];
+    
+    UIViewController *viewController = [[[[UIApplication sharedApplication] delegate] window] rootViewController];
+    if ( viewController.presentedViewController && !viewController.presentedViewController.isBeingDismissed ) {
+        viewController = viewController.presentedViewController;
+    }
+
+    NSLayoutConstraint *constraint = [NSLayoutConstraint 
+    constraintWithItem:alert.view 
+    attribute:NSLayoutAttributeHeight 
+    relatedBy:NSLayoutRelationLessThanOrEqual 
+    toItem:nil 
+    attribute:NSLayoutAttributeNotAnAttribute 
+    multiplier:1 
+    constant:viewController.view.frame.size.height*2.0f];
+
+    [alert.view addConstraint:constraint];
+    [viewController presentViewController:alert animated:YES completion:^{}];
+}
+
 #pragma mark - WebviewBridge helpers
 
 - (NSArray*)stringArrayJsonToArray:(NSString *)message
