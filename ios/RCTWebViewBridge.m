@@ -235,6 +235,7 @@ RCT_NOT_IMPLEMENTED(- (instancetype)initWithCoder:(NSCoder *)aDecoder)
     _webView = [[WKWebView alloc] initWithFrame:self.bounds configuration:theConfiguration];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = self;
+    _webView.allowsBackForwardNavigationGestures = true;
 
     [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookieAcceptPolicy:NSHTTPCookieAcceptPolicyAlways];
 }
