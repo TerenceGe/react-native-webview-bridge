@@ -198,6 +198,7 @@ var WebViewBridge = createReactClass({
         onLoadingError={this.onLoadingError}
         onShouldStartLoadWithRequest={onShouldStartLoadWithRequest}
         onBridgeMessage={onBridgeMessage}
+        onProgress={this.onProgress}
       />;
 
     return (
@@ -278,6 +279,11 @@ var WebViewBridge = createReactClass({
     });
     this.updateNavigationState(event);
   },
+
+  onProgress: function(event: Event) {
+    var onProgress = this.props.onProgress;
+    onProgress && onProgress(event.nativeEvent.progress);
+  },
 });
 
 var RCTWebViewBridge = requireNativeComponent('RCTWebViewBridge', WebViewBridge, {
@@ -285,6 +291,7 @@ var RCTWebViewBridge = requireNativeComponent('RCTWebViewBridge', WebViewBridge,
     onLoadingStart: true,
     onLoadingError: true,
     onLoadingFinish: true,
+    onProgress: true,
   },
 });
 
